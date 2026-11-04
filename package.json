@@ -2,7 +2,7 @@
   "name": "@hellokidder/dsh-hotkey",
   "version": "0.0.2",
   "type": "module",
-  "description": "One home for DSH keyboard shortcuts: hold Control to number conversations and reveal clickable controls with shortcut hints, Control+Tab to cycle, Control+1-9 to jump.",
+  "description": "One home for DSH keyboard shortcuts: hold Control to number conversations and reveal clickable controls with letter hints, Control+Tab to cycle, Control+1-9 to jump.",
   "license": "MIT",
   "author": "kidder",
   "keywords": [

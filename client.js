@@ -55,9 +55,10 @@ window.__ModuleLoader__.load({
 }
 .dsh-hotkey-hints__box {
   position: fixed;
-  border: 1px solid var(--dsw-alias-brand-primary);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--dsw-alias-brand-primary) 8%, transparent);
+  border: 1px dashed var(--dsw-alias-brand-primary, #4d8dff);
+  border-radius: 5px;
+  background: transparent;
+  opacity: 0.5;
   box-sizing: border-box;
   pointer-events: none;
 }
@@ -65,40 +66,34 @@ window.__ModuleLoader__.load({
   position: fixed;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 1px 4px;
-  border: 0.5px solid var(--dsw-alias-border-l1);
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border: 0;
   border-radius: 4px;
-  background: var(--dsw-alias-bg-overlay);
-  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-brand-primary, #4d8dff);
+  color: #fff;
+  font-family: inherit;
   font-size: 10px;
-  line-height: 14px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-}
-.dsh-hotkey-hints__code {
-  padding: 0 3px;
-  border-radius: 3px;
-  background: var(--dsw-alias-brand-primary);
-  color: var(--dsw-alias-bg-base);
-  font: inherit;
-  font-weight: 600;
-}
-.dsh-hotkey-hints__keys {
-  color: var(--dsw-alias-label-secondary);
-  font: inherit;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
 }
 .dsh-hotkey-hints__footer {
   position: fixed;
   left: 50%;
   bottom: 14px;
   transform: translateX(-50%);
-  padding: 3px 8px;
-  border: 0.5px solid var(--dsw-alias-border-l1);
+  padding: 4px 10px;
+  border: 1px solid var(--dsw-alias-border-l1, #3a3f46);
   border-radius: 6px;
-  background: var(--dsw-alias-bg-overlay);
-  color: var(--dsw-alias-label-secondary);
+  background: var(--dsw-alias-bg-overlay, #1f2329);
+  color: var(--dsw-alias-label-secondary, #c9cdd4);
   max-width: calc(100vw - 24px);
   overflow: hidden;
   font-size: 11px;
@@ -106,6 +101,7 @@ window.__ModuleLoader__.load({
   white-space: nowrap;
   text-overflow: ellipsis;
   pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 `
 
@@ -249,6 +245,10 @@ window.__ModuleLoader__.load({
     const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [contenteditable="true"], [contenteditable=""], [tabindex]:not([tabindex="-1"])'
     const HINT_LIMIT = 80
     const HINT_GENERIC_LABELS = new Set(['close', 'more', 'copy', 'send', 'stop', 'ok', 'cancel', 'back', 'next', 'previous', 'delete', 'rename'])
+    const HINT_NATIVE_TAGS = new Set(['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA', 'SUMMARY'])
+    // Native shortcut labels are intentionally hidden for now; flip this to
+    // true to surface the registered key next to the generated letter again.
+    const SHOW_NATIVE_SHORTCUTS = false
 
     function normalizeHintLabel(value) {
       if (typeof value !== 'string') return ''
@@ -351,7 +351,11 @@ window.__ModuleLoader__.load({
         const rect = element.getBoundingClientRect()
         if (rect.width < 2 || rect.height < 2) continue
         if (rect.bottom < 0 || rect.right < 0 || rect.top > viewportHeight || rect.left > viewportWidth) continue
-        const shortcut = matchShortcut(shortcutIndex, readElementNames(element))
+        if (!HINT_NATIVE_TAGS.has(element.tagName)
+          && rect.width * rect.height > viewportWidth * viewportHeight * 0.2) continue
+        const shortcut = shortcutIndex === null || shortcutIndex === undefined
+          ? undefined
+          : matchShortcut(shortcutIndex, readElementNames(element))
         candidates.push({
           element,
           left: rect.left,
@@ -396,11 +400,8 @@ window.__ModuleLoader__.load({
             snapshot.hints.map((hint) => h('div', {
               key: `badge-${hint.code}`,
               className: 'dsh-hotkey-hints__badge',
-              style: { left: hint.left + 2, top: hint.top >= 22 ? hint.top - 18 : hint.top + 2 },
-            },
-              h('kbd', { className: 'dsh-hotkey-hints__code' }, hint.code),
-              hint.keys === '' ? null : h('span', { className: 'dsh-hotkey-hints__keys' }, hint.keys),
-            )),
+              style: { left: hint.left + 3, top: hint.top + 3 },
+            }, hint.code)),
           )
         }
 
@@ -493,10 +494,12 @@ window.__ModuleLoader__.load({
           }
 
           const open = () => {
-            const index = buildShortcutIndex(
-              ctx.shortcuts.catalog.getSnapshot(),
-              ctx.shortcuts.fixedCatalog.getSnapshot(),
-            )
+            const index = SHOW_NATIVE_SHORTCUTS
+              ? buildShortcutIndex(
+                ctx.shortcuts.catalog.getSnapshot(),
+                ctx.shortcuts.fixedCatalog.getSnapshot(),
+              )
+              : null
             const candidates = collectHintCandidates(index)
             if (candidates.length === 0) {
               if (active) close()
