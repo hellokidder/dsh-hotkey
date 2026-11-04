@@ -13,13 +13,13 @@ window.__ModuleLoader__.load({
       'command.next': 'Next conversation',
       'command.previous': 'Previous conversation',
       'command.jump': 'Go to conversation 1-9',
-      'hints.footer': 'Release Command, then press a letter to click · Esc to close',
+      'hints.footer': 'Press a letter to click · Esc to close',
     }
     const zh = {
       'command.next': '下一个对话',
       'command.previous': '上一个对话',
       'command.jump': '跳转到对话 1-9',
-      'hints.footer': '松开 Command 后按字母点击 · Esc 关闭',
+      'hints.footer': '按字母点击 · Esc 关闭',
     }
 
     const CSS = `
@@ -443,32 +443,19 @@ window.__ModuleLoader__.load({
           }
         }, 'dsh-hotkey: modifier state')
 
-        // Long-press Command to reveal clickable targets. Control stays reserved
-        // for conversation numbering and rotation. Every target gets a generated
-        // letter hint; native shortcut labels are off for now.
+        // Double-tap Option (Alt) to toggle the clickable-control hint layer.
+        // Control stays reserved for conversation numbering and rotation.
         ctx.effect(() => {
-          const LONG_PRESS_MS = 350
-          const LINGER_MS = 4000
+          const DOUBLE_TAP_MS = 350
           let active = false
-          let metaHeld = false
-          let pending
-          let linger
+          let lastAltUp = 0
+          let altClean = true
           let frame
           let buffer = ''
           let entries = []
 
           const close = () => {
-            if (pending !== undefined) {
-              clearTimeout(pending)
-              pending = undefined
-            }
-            if (linger !== undefined) {
-              clearTimeout(linger)
-              linger = undefined
-            }
-            if (frame !== undefined) {
-              frame = undefined
-            }
+            if (frame !== undefined) frame = undefined
             buffer = ''
             entries = []
             if (active) {
@@ -499,27 +486,15 @@ window.__ModuleLoader__.load({
             }))
             buffer = ''
             active = true
-            if (linger !== undefined) {
-              clearTimeout(linger)
-              linger = undefined
-            }
             hintStore.publish({
               active: true,
               hints: entries.map(({ element, ...hint }) => hint),
             })
           }
 
-          const scheduleOpen = () => {
-            if (active || pending !== undefined) return
-            pending = setTimeout(() => {
-              pending = undefined
-              if (metaHeld) open()
-            }, LONG_PRESS_MS)
-          }
-
-          const scheduleClose = (delay) => {
-            if (linger !== undefined) clearTimeout(linger)
-            linger = setTimeout(close, delay)
+          const toggle = () => {
+            if (active) close()
+            else open()
           }
 
           const clickTarget = (element) => {
@@ -547,28 +522,24 @@ window.__ModuleLoader__.load({
 
           const onKeyDown = (event) => {
             if (event.repeat) return
-            const command = event.code === 'MetaLeft' || event.code === 'MetaRight'
-            if (command) {
-              if (event.metaKey) {
-                metaHeld = true
-                scheduleOpen()
+            const alt = event.code === 'AltLeft' || event.code === 'AltRight'
+            if (alt) {
+              if (event.ctrlKey || event.metaKey || event.shiftKey) return
+              const now = Date.now()
+              if (altClean && lastAltUp !== 0 && now - lastAltUp <= DOUBLE_TAP_MS) {
+                lastAltUp = 0
+                altClean = false
+                toggle()
               }
               return
             }
-            if (/^(Control|Shift|Alt)(Left|Right)$/u.test(event.code)) return
-            if (event.metaKey) {
-              metaHeld = true
-              if (pending !== undefined) {
-                clearTimeout(pending)
-                pending = undefined
-              }
-              if (active) close()
-              return
-            }
+            if (/^(Control|Shift|Meta)(Left|Right)$/u.test(event.code)) return
+            altClean = false
+            lastAltUp = 0
             if (!active) return
-            // Control keeps driving session rotation; any other chord closes the
-            // hint layer and proceeds.
-            if (event.ctrlKey || event.shiftKey || event.altKey) {
+            // Any other chord closes the layer and proceeds; Control keeps
+            // driving conversation rotation.
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
               close()
               return
             }
@@ -588,13 +559,9 @@ window.__ModuleLoader__.load({
           }
 
           const onKeyUp = (event) => {
-            if (event.code !== 'MetaLeft' && event.code !== 'MetaRight') return
-            metaHeld = false
-            if (pending !== undefined) {
-              clearTimeout(pending)
-              pending = undefined
-            }
-            if (active) scheduleClose(LINGER_MS)
+            if (event.code !== 'AltLeft' && event.code !== 'AltRight') return
+            lastAltUp = Date.now()
+            altClean = true
           }
 
           const onViewport = () => {

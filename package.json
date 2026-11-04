@@ -2,7 +2,7 @@
   "name": "@hellokidder/dsh-hotkey",
   "version": "0.0.2",
   "type": "module",
-  "description": "One home for DSH keyboard shortcuts: hold Control to number and cycle conversations, hold Command to reveal clickable controls with letter hints.",
+  "description": "One home for DSH keyboard shortcuts: hold Control to number and cycle conversations, double-tap Option to reveal clickable controls with letter hints.",
   "license": "MIT",
   "author": "kidder",
   "keywords": [
