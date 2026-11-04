@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.3
+
+- Cycle conversations with Control+Tab / Control+Shift+Tab; Control+1-9 still jumps to a numbered conversation.
+- Hold Control to number the sidebar conversations.
+
 ## 0.0.2
 
 - Use Control on every platform, including macOS; Command+N is no longer reserved and keeps opening a new session.

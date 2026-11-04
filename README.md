@@ -7,16 +7,16 @@ npm：`@hellokidder/dsh-hotkey`
 ## 已包含
 
 - **按住 Control** 时，左侧每个对话行首显示 1…n 的序号；当前对话的序号使用品牌色高亮。macOS 上也是 **Control**，不是 Command。
-- **Control + N** 切换到下一个对话，**Control + Shift + N** 切换到上一个，均循环。
+- **Control + Tab** 切换到下一个对话，**Control + Shift + Tab** 切换到上一个，均循环。
 - **Control + 1…9** 直接跳转到对应序号的对话。
 - 序号顺序跟随侧边栏默认视图：按 Workspace 分组、置顶优先、组内按最近使用排序；归档会话、子代理会话和空的「新会话」行不参与编号。
 - 三个快捷键会出现在「设置 → 键盘快捷键」的只读分组中，便于查找。
 
 ## 平台说明
 
-- 所有平台统一使用 **Control**；macOS 的 `Command+N` 不再被插件占用，仍然是「新建会话」。
-- macOS 的 `Control+1…9` 可能被系统「切换桌面」占用。如果数字跳转没有反应，可以在 **系统设置 → 键盘 → 键盘快捷键 → 调度中心** 关闭对应的桌面切换快捷键；`Control+N` / `Control+Shift+N` 不受影响。
-- 在 Chrome / Safari 里直接打开 Web GUI 时，`Control+1…9` 可能被浏览器标签页切换占用；桌面 App 更稳妥。
+- 所有平台统一使用 **Control**；`Command+N` 完全不受影响，仍然是「新建会话」。
+- macOS 的 `Control+1…9` 可能被系统「切换桌面」占用。如果数字跳转没有反应，可以在 **系统设置 → 键盘 → 键盘快捷键 → 调度中心** 关闭对应的桌面切换快捷键；`Control+Tab` / `Control+Shift+Tab` 不受影响。
+- 在 Chrome / Safari 里直接打开 Web GUI 时，`Control+Tab` / `Control+Shift+Tab` 会被浏览器标签页切换占用，`Control+1…9` 也可能被占用；桌面 App 更稳妥。
 
 ## 安装
 
@@ -32,7 +32,7 @@ dsh plugin --profile web add @hellokidder/dsh-hotkey
 dsh plugin --profile web add "link:/absolute/path/to/dsh-hotkey"
 ```
 
-安装后在插件管理中启用，客户端会通过 HMR 加载；如果没有更新，刷新一次页面。
+安装后在插件管理中启用；修改 `client.js` 后刷新一次页面即可加载，如果运行在带 `pnpm run dev:web` watcher 的 checkout 中则会自动重载。
 
 ## 显示细节
 
@@ -41,10 +41,10 @@ dsh plugin --profile web add "link:/absolute/path/to/dsh-hotkey"
 
 ## 与「新建会话」的关系
 
-插件现在只使用 Control 组合：
+插件只使用 Control 组合，不占用任何 `Command`/`Ctrl + N`：
 
-- macOS：`Command+N` 保持宿主默认行为，仍然是「新建会话」；对话切换使用 `Control+N` / `Control+Shift+N`。
-- Windows / Linux：宿主的「新建会话」默认也是 `Ctrl+N`，插件会接管这个组合；侧边栏的新建按钮和菜单仍然可用，也可在「设置 → 键盘快捷键」里给「新建会话」换一个键。
+- `Command+N`（macOS）和宿主默认的 `Ctrl+N`（Windows/Linux）都保持原样，「新建会话」不受影响；
+- 对话轮转使用 `Control+Tab` / `Control+Shift+Tab`，直达使用 `Control+1…9`；
 - 固定快捷键仍然会出现在「设置 → 键盘快捷键」中，方便查看。
 
 ## 扩展新快捷键
@@ -53,7 +53,7 @@ dsh plugin --profile web add "link:/absolute/path/to/dsh-hotkey"
 2. 在 `window` 的**捕获阶段**监听 `keydown` 并分发动作，不要依赖 `observeFixedInput` 的 bubble 监听：编辑器和输入法可能提前 `stopPropagation`，中文输入法还会把 Shift 标记为组合态。带 Control 的组合是命令，不应被 `isComposing` 拦截。
 3. 需要随快捷键状态显示 UI 时，沿用当前 `store` + `React.useSyncExternalStore` 的模式，通过槽位渲染。
 4. 同步更新 `locale/en.json`、`locale/zh.json` 的插件标题与描述，以及 `client.js` 中的 `en`/`zh` 命令标签。
-5. 保存后客户端 HMR 会自动重载；如未生效刷新页面即可。修改 `package.json` 或 patch 需要重新安装。
+5. 保存后刷新页面即可；如果运行在带 `pnpm run dev:web` watcher 的 checkout 中会自动重载。修改 `package.json` 或 patch 需要重新安装。
 
 ## 开发
 
@@ -70,7 +70,7 @@ node --check client.js
 
 ```sh
 npm publish --access public
-git tag v0.0.2 && git push origin v0.0.2
+git tag v0.0.3 && git push origin v0.0.3
 ```
 
 ## License

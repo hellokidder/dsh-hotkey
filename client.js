@@ -225,8 +225,8 @@ window.__ModuleLoader__.load({
         }
 
         ctx.effect(() => {
-          const nextBinding = { code: 'KeyN', modifiers: ['control'] }
-          const previousBinding = { code: 'KeyN', modifiers: ['control', 'shift'] }
+          const nextBinding = { code: 'Tab', modifiers: ['control'] }
+          const previousBinding = { code: 'Tab', modifiers: ['control', 'shift'] }
           const jumpBindings = []
           for (let number = 1; number <= 9; number++) {
             jumpBindings.push({ code: `Digit${number}`, modifiers: ['control'] })
@@ -268,11 +268,11 @@ window.__ModuleLoader__.load({
           const onKeyDown = (event) => {
             if (event.defaultPrevented || event.repeat) return
             // Do not consult isComposing/keyCode 229 here: Chinese IMEs report
-            // Shift as a composition key, which used to swallow Control+Shift+N.
+            // Shift as a composition key, which would swallow Control+Shift+Tab.
             // A Control chord is a command, not text input.
             const primary = event.ctrlKey === true && event.metaKey !== true
             if (!primary || event.altKey === true) return
-            if (event.code === 'KeyN') {
+            if (event.code === 'Tab') {
               event.preventDefault()
               event.stopPropagation()
               step(event.shiftKey === true ? -1 : 1)

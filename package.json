@@ -1,8 +1,8 @@
 {
   "name": "@hellokidder/dsh-hotkey",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
-  "description": "One home for DSH keyboard shortcuts: hold Control to number sidebar conversations, Control+N / Shift+N to cycle, Control+1-9 to jump.",
+  "description": "One home for DSH keyboard shortcuts: hold Control to number sidebar conversations, Control+Tab / Shift+Tab to cycle, Control+1-9 to jump.",
   "license": "MIT",
   "author": "kidder",
   "keywords": [

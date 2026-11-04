@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH 快捷键",
-    "description": "DSH 快捷键的统一入口。当前包含：按住 Control 显示侧边栏对话编号，Control+N / Control+Shift+N 循环切换，Control+1-9 直接跳转到对应序号。"
+    "description": "DSH 快捷键的统一入口。当前包含：按住 Control 显示侧边栏对话编号，Control+Tab / Control+Shift+Tab 循环切换，Control+1-9 直接跳转到对应序号。"
   }
 }
