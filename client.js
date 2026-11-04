@@ -13,13 +13,13 @@ window.__ModuleLoader__.load({
       'command.next': 'Next conversation',
       'command.previous': 'Previous conversation',
       'command.jump': 'Go to conversation 1-9',
-      'hints.footer': 'Release Control, then press a letter to click · Esc to close',
+      'hints.footer': 'Release Command, then press a letter to click · Esc to close',
     }
     const zh = {
       'command.next': '下一个对话',
       'command.previous': '上一个对话',
       'command.jump': '跳转到对话 1-9',
-      'hints.footer': '松开 Control 后按字母点击 · Esc 关闭',
+      'hints.footer': '松开 Command 后按字母点击 · Esc 关闭',
     }
 
     const CSS = `
@@ -443,14 +443,14 @@ window.__ModuleLoader__.load({
           }
         }, 'dsh-hotkey: modifier state')
 
-        // Long-press Control to reveal clickable targets. Existing shortcuts are
-        // shown when a control's accessible name matches a registered command;
-        // every target also gets a generated letter hint.
+        // Long-press Command to reveal clickable targets. Control stays reserved
+        // for conversation numbering and rotation. Every target gets a generated
+        // letter hint; native shortcut labels are off for now.
         ctx.effect(() => {
           const LONG_PRESS_MS = 350
           const LINGER_MS = 4000
           let active = false
-          let ctrlHeld = false
+          let metaHeld = false
           let pending
           let linger
           let frame
@@ -513,7 +513,7 @@ window.__ModuleLoader__.load({
             if (active || pending !== undefined) return
             pending = setTimeout(() => {
               pending = undefined
-              if (ctrlHeld) open()
+              if (metaHeld) open()
             }, LONG_PRESS_MS)
           }
 
@@ -547,17 +547,17 @@ window.__ModuleLoader__.load({
 
           const onKeyDown = (event) => {
             if (event.repeat) return
-            const control = event.code === 'ControlLeft' || event.code === 'ControlRight'
-            if (control) {
-              if (event.ctrlKey) {
-                ctrlHeld = true
+            const command = event.code === 'MetaLeft' || event.code === 'MetaRight'
+            if (command) {
+              if (event.metaKey) {
+                metaHeld = true
                 scheduleOpen()
               }
               return
             }
-            if (/^(Shift|Alt|Meta)(Left|Right)$/u.test(event.code)) return
-            if (event.ctrlKey) {
-              ctrlHeld = true
+            if (/^(Control|Shift|Alt)(Left|Right)$/u.test(event.code)) return
+            if (event.metaKey) {
+              metaHeld = true
               if (pending !== undefined) {
                 clearTimeout(pending)
                 pending = undefined
@@ -566,13 +566,15 @@ window.__ModuleLoader__.load({
               return
             }
             if (!active) return
-            if (event.code === 'Escape') {
-              event.preventDefault()
-              event.stopPropagation()
+            // Control keeps driving session rotation; any other chord closes the
+            // hint layer and proceeds.
+            if (event.ctrlKey || event.shiftKey || event.altKey) {
               close()
               return
             }
-            if (event.shiftKey || event.altKey || event.metaKey) {
+            if (event.code === 'Escape') {
+              event.preventDefault()
+              event.stopPropagation()
               close()
               return
             }
@@ -586,8 +588,8 @@ window.__ModuleLoader__.load({
           }
 
           const onKeyUp = (event) => {
-            if (event.code !== 'ControlLeft' && event.code !== 'ControlRight') return
-            ctrlHeld = false
+            if (event.code !== 'MetaLeft' && event.code !== 'MetaRight') return
+            metaHeld = false
             if (pending !== undefined) {
               clearTimeout(pending)
               pending = undefined
