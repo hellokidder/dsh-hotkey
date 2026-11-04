@@ -58,22 +58,22 @@ window.__ModuleLoader__.load({
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 5px;
-  background: #2f6fed;
-  color: #fff;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border: 0.5px solid var(--dsw-alias-border-l1, rgba(255, 255, 255, 0.12));
+  border-radius: 4px;
+  background: var(--dsw-alias-bg-layer-2, #262a31);
+  color: var(--dsw-alias-label-secondary, #c9cdd4);
   font-family: inherit;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   text-transform: lowercase;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
+  user-select: none;
 }
 .dsh-hotkey-hints__footer {
   position: fixed;
