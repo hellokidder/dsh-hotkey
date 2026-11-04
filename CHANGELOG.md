@@ -5,7 +5,7 @@
 - Use Control on every platform, including macOS; Command+N is no longer reserved and keeps opening a new session.
 - Cycle conversations with Control+Tab / Control+Shift+Tab; Control+1-9 still jumps to a numbered conversation.
 - Numbering and cycling follow the rendered sidebar order, so changing grouping, sorting, folding or the archive filter renumbers the visible rows; when no row is rendered, fall back to the service order.
-- Skip the transcript's dense turn-navigation minimap when collecting clickable hints.
+- Limit hint collection to real controls outside the chat transcript; skip generic tabindex containers and the turn-navigation rail.
 - Double-tap Option to toggle the clickable-control hint layer; every target is a compact letter pill matching the conversation number badges, with no outline boxes and native shortcut labels hidden for now. Control stays reserved for conversation numbering and rotation.
 - Keep the capture-phase keyboard handling and IME-safe dispatch from 0.0.1.
 

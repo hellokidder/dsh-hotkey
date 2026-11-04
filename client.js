@@ -233,7 +233,7 @@ window.__ModuleLoader__.load({
       return { ordered, indexById, currentId: fallback.currentId }
     }
 
-    const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="tab"], [role="menuitem"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [contenteditable="true"], [contenteditable=""], [tabindex]:not([tabindex="-1"])'
+    const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [contenteditable="true"], [contenteditable=""]'
     const HINT_LIMIT = 80
     const HINT_GENERIC_LABELS = new Set(['close', 'more', 'copy', 'send', 'stop', 'ok', 'cancel', 'back', 'next', 'previous', 'delete', 'rename'])
     const HINT_NATIVE_TAGS = new Set(['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA', 'SUMMARY'])
@@ -343,6 +343,7 @@ window.__ModuleLoader__.load({
         if (element.closest('[data-dsh-hotkey-overlay]') !== null) continue
         if (element.closest('[inert]') !== null) continue
         if (element.closest('[aria-hidden="true"]') !== null) continue
+        if (element.closest('[data-chat-flow]') !== null) continue
         if (isTurnRail(element)) continue
         if (element.tagName === 'BODY' || element.tagName === 'HTML') continue
         if (element.disabled === true || element.getAttribute('aria-disabled') === 'true') continue
