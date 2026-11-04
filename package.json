@@ -1,5 +1,5 @@
 {
-  "name": "dsh-hotkey",
+  "name": "@hellokidder/dsh-hotkey",
   "version": "0.0.1",
   "type": "module",
   "description": "One home for DSH keyboard shortcuts: hold Command to number sidebar conversations, Command+N / Shift+N to cycle, Command+1-9 to jump.",

@@ -2,6 +2,8 @@
 
 DSH 快捷键的统一入口。当前版本提供侧边栏对话切换；后续快捷键能力都集成在这个插件里。
 
+npm：`@hellokidder/dsh-hotkey`
+
 ## 已包含
 
 - **按住 Command**（Windows/Linux 为 Control）时，左侧每个对话行首显示 1…n 的序号；当前对话的序号使用品牌色高亮。
@@ -20,7 +22,7 @@ DSH 快捷键的统一入口。当前版本提供侧边栏对话切换；后续�
 从 npm 安装：
 
 ```sh
-dsh plugin --profile web add dsh-hotkey
+dsh plugin --profile web add @hellokidder/dsh-hotkey
 ```
 
 从本地目录安装（开发）：
@@ -68,7 +70,7 @@ node --check client.js
 ## 发布
 
 ```sh
-npm publish
+npm publish --access public
 git tag v0.0.1 && git push origin v0.0.1
 ```
 

@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: 'dsh-hotkey',
+  id: '@hellokidder/dsh-hotkey',
   factory(require) {
     const React = require('react')
     const h = React.createElement
@@ -7,7 +7,7 @@ window.__ModuleLoader__.load({
     const NS = 'dshHotkey'
     const BADGE_CLASS = 'dsh-hotkey__number'
     const BADGE_CURRENT_CLASS = 'dsh-hotkey__number--current'
-    const STYLE_ID = 'dsh-hotkey/badge.css'
+    const STYLE_ID = '@hellokidder/dsh-hotkey/badge.css'
 
     const en = {
       'command.next': 'Next conversation',

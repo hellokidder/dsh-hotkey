@@ -1,3 +1,3 @@
 - insert:
     - id: dsh-hotkey
-      name: 'dsh-hotkey'
+      name: '@hellokidder/dsh-hotkey'
