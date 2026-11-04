@@ -5,6 +5,7 @@
 - Use Control on every platform, including macOS; Command+N is no longer reserved and keeps opening a new session.
 - Cycle conversations with Control+Tab / Control+Shift+Tab; Control+1-9 still jumps to a numbered conversation.
 - Numbering and cycling follow the rendered sidebar order, so changing grouping, sorting, folding or the archive filter renumbers the visible rows; when no row is rendered, fall back to the service order.
+- Long-press Control to reveal every clickable control in the window: matched controls show their registered shortcut, all controls get a generated letter hint that clicks them after Control is released.
 - Keep the capture-phase keyboard handling and IME-safe dispatch from 0.0.1.
 
 ## 0.0.1

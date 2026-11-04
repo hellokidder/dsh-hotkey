@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH Hotkey",
-    "description": "One home for DSH keyboard shortcuts. Currently: hold Control to number the conversations in the sidebar, Control+Tab / Control+Shift+Tab to move between them, and Control+1-9 to jump straight to that number."
+    "description": "One home for DSH keyboard shortcuts. Hold Control to number the sidebar conversations and reveal clickable controls with shortcut hints; Control+Tab / Control+Shift+Tab cycle, Control+1-9 jump."
   }
 }
