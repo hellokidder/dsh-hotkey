@@ -313,6 +313,18 @@ window.__ModuleLoader__.load({
       return codes
     }
 
+    /**
+     * The transcript's turn-navigation minimap is a narrow nav stacked with
+     * `data-index` mark buttons. Its marks are far too dense for hints.
+     */
+    function isTurnRail(element) {
+      const nav = element.closest('nav')
+      if (nav === null || nav.getAttribute('aria-label') === null) return false
+      if (typeof nav.getBoundingClientRect !== 'function' || typeof nav.querySelectorAll !== 'function') return false
+      if (nav.getBoundingClientRect().width > 80) return false
+      return nav.querySelectorAll('button[data-index]').length >= 2
+    }
+
     function collectHintCandidates(shortcutIndex) {
       if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') return []
       if (typeof window === 'undefined') return []
@@ -331,6 +343,7 @@ window.__ModuleLoader__.load({
         if (element.closest('[data-dsh-hotkey-overlay]') !== null) continue
         if (element.closest('[inert]') !== null) continue
         if (element.closest('[aria-hidden="true"]') !== null) continue
+        if (isTurnRail(element)) continue
         if (element.tagName === 'BODY' || element.tagName === 'HTML') continue
         if (element.disabled === true || element.getAttribute('aria-disabled') === 'true') continue
         if (typeof window.getComputedStyle === 'function') {
