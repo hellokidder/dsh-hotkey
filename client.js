@@ -140,14 +140,62 @@ window.__ModuleLoader__.load({
       return { ordered, indexById, currentId }
     }
 
+    /** Read the Session rows the sidebar actually rendered, in visual order. */
+    function readRenderedSessionIds() {
+      if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') return []
+      const nodes = document.querySelectorAll('[data-row-key^="session:"]')
+      const ids = []
+      const seen = new Set()
+      for (const node of nodes) {
+        const key = node.getAttribute('data-row-key')
+        if (key === null) continue
+        const id = key.slice('session:'.length)
+        if (id === '' || seen.has(id)) continue
+        seen.add(id)
+        ids.push(id)
+      }
+      return ids
+    }
+
+    /**
+     * Prefer the rendered rows so numbering follows the user's current
+     * grouping, sorting, pinning, folding and archive filter. When no row is
+     * rendered (rail, search, early boot), fall back to the service order.
+     */
+    function deriveVisibleOrder(list, workspaceState) {
+      const fallback = deriveOrder(list, workspaceState)
+      const rendered = readRenderedSessionIds()
+      if (rendered.length === 0) return fallback
+      const state = workspaceState === undefined || workspaceState === null ? {} : workspaceState
+      const archived = new Set(state.archivedSessionIds === undefined ? [] : state.archivedSessionIds)
+      const byId = list.byId === undefined ? {} : list.byId
+      const ordered = []
+      const indexById = {}
+      for (const id of rendered) {
+        const session = byId[id]
+        if (session === undefined) continue
+        if (session.origin === 'subagent') continue
+        if (session.blank === true) continue
+        if (archived.has(id)) continue
+        indexById[id] = ordered.length + 1
+        ordered.push(id)
+      }
+      if (ordered.length === 0) return fallback
+      return { ordered, indexById, currentId: fallback.currentId }
+    }
+
     return {
       inject: ['slots', 'locale', 'shortcuts', 'sessions', 'workspaces', 'uiWorkspace'],
       apply(ctx) {
         ctx.effect(() => ctx.locale.register(NS, { en, zh }), 'dsh-hotkey: dictionaries')
         const t = ctx.locale.bind(NS)
 
-        const initial = deriveOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot())
+        const initial = deriveVisibleOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot())
         const store = createStore({ held: false, ...initial })
+
+        const refreshOrder = () => {
+          store.publish(deriveVisibleOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot()))
+        }
 
         function SwitcherBadge({ sessionId }) {
           const snapshot = React.useSyncExternalStore(store.subscribe, store.getSnapshot)
@@ -172,12 +220,9 @@ window.__ModuleLoader__.load({
         }, 'dsh-hotkey: badge styles')
 
         ctx.effect(() => {
-          const rebuild = () => {
-            store.publish(deriveOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot()))
-          }
-          const offSessions = ctx.sessions.list.subscribe(rebuild)
-          const offWorkspaces = ctx.workspaces.list.subscribe(rebuild)
-          rebuild()
+          const offSessions = ctx.sessions.list.subscribe(refreshOrder)
+          const offWorkspaces = ctx.workspaces.list.subscribe(refreshOrder)
+          refreshOrder()
           return () => {
             offSessions()
             offWorkspaces()
@@ -186,7 +231,10 @@ window.__ModuleLoader__.load({
 
         // Numbers follow Control on every platform, macOS included.
         ctx.effect(() => {
-          const sync = (event) => store.publish({ held: event.ctrlKey })
+          const sync = (event) => {
+            if (event.ctrlKey) refreshOrder()
+            store.publish({ held: event.ctrlKey })
+          }
           const clear = () => store.publish({ held: false })
           const onVisibility = () => {
             if (document.visibilityState === 'hidden') clear()
