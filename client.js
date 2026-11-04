@@ -53,36 +53,27 @@ window.__ModuleLoader__.load({
   pointer-events: none;
   font-family: inherit;
 }
-.dsh-hotkey-hints__box {
-  position: fixed;
-  border: 1px dashed var(--dsw-alias-brand-primary, #4d8dff);
-  border-radius: 5px;
-  background: transparent;
-  opacity: 0.5;
-  box-sizing: border-box;
-  pointer-events: none;
-}
 .dsh-hotkey-hints__badge {
   position: fixed;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border: 0;
-  border-radius: 4px;
-  background: var(--dsw-alias-brand-primary, #4d8dff);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 5px;
+  background: #2f6fed;
   color: #fff;
   font-family: inherit;
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0.02em;
   text-transform: lowercase;
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
 }
 .dsh-hotkey-hints__footer {
   position: fixed;
@@ -360,8 +351,6 @@ window.__ModuleLoader__.load({
           element,
           left: rect.left,
           top: rect.top,
-          width: rect.width,
-          height: rect.height,
           keys: shortcut === undefined ? '' : shortcut.keys,
         })
       }
@@ -393,14 +382,9 @@ window.__ModuleLoader__.load({
           },
             h('div', { className: 'dsh-hotkey-hints__footer' }, t('hints.footer')),
             snapshot.hints.map((hint) => h('div', {
-              key: `box-${hint.code}`,
-              className: 'dsh-hotkey-hints__box',
-              style: { left: hint.left, top: hint.top, width: hint.width, height: hint.height },
-            })),
-            snapshot.hints.map((hint) => h('div', {
               key: `badge-${hint.code}`,
               className: 'dsh-hotkey-hints__badge',
-              style: { left: hint.left + 3, top: hint.top + 3 },
+              style: { left: hint.left + 4, top: hint.top + 4 },
             }, hint.code)),
           )
         }
@@ -512,8 +496,6 @@ window.__ModuleLoader__.load({
               keys: candidate.keys,
               left: candidate.left,
               top: candidate.top,
-              width: candidate.width,
-              height: candidate.height,
             }))
             buffer = ''
             active = true
