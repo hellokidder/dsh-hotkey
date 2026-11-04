@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "DSH Hotkey",
+    "description": "One home for DSH keyboard shortcuts. Currently: hold Command to number the conversations in the sidebar, Command+N / Command+Shift+N to move between them, and Command+1-9 to jump straight to that number."
+  }
+}

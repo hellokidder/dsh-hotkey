@@ -1,0 +1,55 @@
+{
+  "name": "dsh-hotkey",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "One home for DSH keyboard shortcuts: hold Command to number sidebar conversations, Command+N / Shift+N to cycle, Command+1-9 to jump.",
+  "license": "MIT",
+  "author": "kidder",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "hotkeys",
+    "keyboard-shortcuts",
+    "session-switcher"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hellokidder/dsh-hotkey.git"
+  },
+  "homepage": "https://github.com/hellokidder/dsh-hotkey#readme",
+  "bugs": {
+    "url": "https://github.com/hellokidder/dsh-hotkey/issues"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-shortcuts",
+        "@deepseek-ai/dsh-client-ui-workspace"
+      ]
+    }
+  }
+}
