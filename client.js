@@ -161,13 +161,6 @@ window.__ModuleLoader__.load({
           }, String(number))
         }
 
-        const platform = String(
-          (navigator.userAgentData === undefined ? undefined : navigator.userAgentData.platform)
-          ?? navigator.platform
-          ?? '',
-        ).toLowerCase()
-        const isMac = platform.includes('mac') || platform.includes('iphone') || platform.includes('ipad')
-
         ctx.effect(() => {
           const style = document.createElement('style')
           style.setAttribute('data-plugin-css', STYLE_ID)
@@ -191,9 +184,9 @@ window.__ModuleLoader__.load({
           }
         }, 'dsh-hotkey: switch order')
 
-        // Numbers follow the physical primary modifier: Command on macOS, Control elsewhere.
+        // Numbers follow Control on every platform, macOS included.
         ctx.effect(() => {
-          const sync = (event) => store.publish({ held: isMac ? event.metaKey : event.ctrlKey })
+          const sync = (event) => store.publish({ held: event.ctrlKey })
           const clear = () => store.publish({ held: false })
           const onVisibility = () => {
             if (document.visibilityState === 'hidden') clear()
@@ -232,13 +225,13 @@ window.__ModuleLoader__.load({
         }
 
         ctx.effect(() => {
-          const nextBinding = { code: 'KeyN', modifiers: ['primary'] }
-          const previousBinding = { code: 'KeyN', modifiers: ['primary', 'shift'] }
+          const nextBinding = { code: 'KeyN', modifiers: ['control'] }
+          const previousBinding = { code: 'KeyN', modifiers: ['control', 'shift'] }
           const jumpBindings = []
           for (let number = 1; number <= 9; number++) {
-            jumpBindings.push({ code: `Digit${number}`, modifiers: ['primary'] })
+            jumpBindings.push({ code: `Digit${number}`, modifiers: ['control'] })
           }
-          const jumpKeys = ctx.shortcuts.describeBinding({ code: 'Digit1', modifiers: ['primary'] }).keys
+          const jumpKeys = ctx.shortcuts.describeBinding({ code: 'Digit1', modifiers: ['control'] }).keys
           const disposers = [
             ctx.shortcuts.registerFixed({
               id: 'dsh-hotkey.next',
@@ -269,17 +262,15 @@ window.__ModuleLoader__.load({
 
         // Capture phase: own the combination before editors, terminals, and
         // modal controls can stop its propagation. The fixed registrations above
-        // reserve the keys (so Command+N is not intercepted as New Session) and
-        // keep them visible in the Keyboard Shortcuts reference.
+        // reserve the Control chords and keep them visible in the Keyboard
+        // Shortcuts reference; Command+N stays with New Session.
         ctx.effect(() => {
           const onKeyDown = (event) => {
             if (event.defaultPrevented || event.repeat) return
             // Do not consult isComposing/keyCode 229 here: Chinese IMEs report
-            // Shift as a composition key, which used to swallow Command+Shift+N.
-            // A primary-modifier chord is a command, not text input.
-            const primary = isMac
-              ? event.metaKey === true && event.ctrlKey !== true
-              : event.ctrlKey === true && event.metaKey !== true
+            // Shift as a composition key, which used to swallow Control+Shift+N.
+            // A Control chord is a command, not text input.
+            const primary = event.ctrlKey === true && event.metaKey !== true
             if (!primary || event.altKey === true) return
             if (event.code === 'KeyN') {
               event.preventDefault()

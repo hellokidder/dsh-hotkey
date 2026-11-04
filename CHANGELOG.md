@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.2
+
+- Use Control on every platform, including macOS; Command+N is no longer reserved and keeps opening a new session.
+- Keep the capture-phase keyboard handling and IME-safe dispatch from 0.0.1.
+
 ## 0.0.1
 
 - First release.
