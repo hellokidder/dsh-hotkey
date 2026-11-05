@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH 快捷键",
-    "description": "DSH 快捷键的统一入口。按住 Control 显示侧边栏对话编号并轮转；双击 Option 为整窗可点击控件显示字母提示。"
+    "description": "DSH 快捷键的统一入口。按住 Control 显示侧边栏对话编号并轮转；双击 Option 显示字母提示；Option+Enter 聚焦输入框。"
   }
 }

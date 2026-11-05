@@ -7,6 +7,8 @@
 - Numbering and cycling follow the rendered sidebar order, so changing grouping, sorting, folding or the archive filter renumbers the visible rows; when no row is rendered, fall back to the service order.
 - Limit hint collection to real controls (including buttons and links inside the chat transcript); skip generic tabindex containers and the turn-navigation rail.
 - Hint codes are two letters: the first letter filters and highlights matches while other badges disappear, and the second letter clicks; Backspace rewinds the filter.
+- Add Option+Enter to focus the message composer from anywhere, closing the active main panel first.
+- Include the Lexical composer and menu/listbox portal items in hint scanning, and skip hidden ancestors via checkVisibility.
 - Double-tap Option to toggle the clickable-control hint layer; every target is a compact letter pill matching the conversation number badges, with no outline boxes and native shortcut labels hidden for now. Control stays reserved for conversation numbering and rotation.
 - Keep the capture-phase keyboard handling and IME-safe dispatch from 0.0.1.
 

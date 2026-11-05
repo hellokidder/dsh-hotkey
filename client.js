@@ -13,12 +13,14 @@ window.__ModuleLoader__.load({
       'command.next': 'Next conversation',
       'command.previous': 'Previous conversation',
       'command.jump': 'Go to conversation 1-9',
+      'command.focus': 'Focus message input',
       'hints.footer': 'Type hint letters to filter and click · Esc to close',
     }
     const zh = {
       'command.next': '下一个对话',
       'command.previous': '上一个对话',
       'command.jump': '跳转到对话 1-9',
+      'command.focus': '聚焦输入框',
       'hints.footer': '输入字母筛选并点击 · Esc 关闭',
     }
 
@@ -240,7 +242,7 @@ window.__ModuleLoader__.load({
       return { ordered, indexById, currentId: fallback.currentId }
     }
 
-    const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [contenteditable="true"], [contenteditable=""]'
+    const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [data-composer-input], [data-lexical-editor="true"], [role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [role="textbox"], [role="searchbox"], [contenteditable]:not([contenteditable="false"])'
     const HINT_LIMIT = 80
     const HINT_GENERIC_LABELS = new Set(['close', 'more', 'copy', 'send', 'stop', 'ok', 'cancel', 'back', 'next', 'previous', 'delete', 'rename'])
     const HINT_NATIVE_TAGS = new Set(['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA', 'SUMMARY'])
@@ -329,6 +331,30 @@ window.__ModuleLoader__.load({
       return nav.querySelectorAll('button[data-index]').length >= 2
     }
 
+    /** The visible composer editor, preferring the largest rendered one. */
+    function findComposer() {
+      if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') return null
+      const nodes = document.querySelectorAll('[data-composer-input], [data-lexical-editor="true"][contenteditable]:not([contenteditable="false"]), [role="textbox"][aria-multiline="true"]')
+      let best = null
+      let bestArea = 0
+      for (const node of nodes) {
+        if (typeof node.getBoundingClientRect !== 'function') continue
+        const rect = node.getBoundingClientRect()
+        if (rect.width < 20 || rect.height < 10) continue
+        if (typeof node.checkVisibility === 'function') {
+          try {
+            if (!node.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) continue
+          } catch (_ignored) {}
+        }
+        const area = rect.width * rect.height
+        if (area > bestArea) {
+          best = node
+          bestArea = area
+        }
+      }
+      return best
+    }
+
     function collectHintCandidates(shortcutIndex) {
       if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') return []
       if (typeof window === 'undefined') return []
@@ -345,11 +371,19 @@ window.__ModuleLoader__.load({
           || typeof element.closest !== 'function') continue
         if (element.matches('[data-row-key^="session:"]')) continue
         if (element.closest('[data-dsh-hotkey-overlay]') !== null) continue
-        if (element.closest('[inert]') !== null) continue
-        if (element.closest('[aria-hidden="true"]') !== null) continue
         if (isTurnRail(element)) continue
+        // Menu and listbox portals can sit under an aria-hidden/inert app shell
+        // while still being the visible interactive layer.
+        const inMenu = element.closest('[role="menu"], [role="listbox"]') !== null
+        if (!inMenu && element.closest('[inert]') !== null) continue
+        if (!inMenu && element.closest('[aria-hidden="true"]') !== null) continue
         if (element.tagName === 'BODY' || element.tagName === 'HTML') continue
         if (element.disabled === true || element.getAttribute('aria-disabled') === 'true') continue
+        if (typeof element.checkVisibility === 'function') {
+          try {
+            if (!element.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) continue
+          } catch (_ignored) {}
+        }
         if (typeof window.getComputedStyle === 'function') {
           const style = window.getComputedStyle(element)
           if (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse') continue
@@ -549,6 +583,30 @@ window.__ModuleLoader__.load({
 
           const onKeyDown = (event) => {
             if (event.repeat) return
+            const altEnter = event.code === 'Enter' && event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
+            if (altEnter) {
+              const composer = findComposer()
+              const layout = ctx.get('layout')
+              if (composer !== null && document.activeElement === composer) return
+              if (composer === null && layout === undefined) return
+              event.preventDefault()
+              event.stopPropagation()
+              if (active) close()
+              const focusComposer = () => {
+                const target = findComposer()
+                if (target !== null) target.focus({ preventScroll: true })
+              }
+              if (layout !== undefined) {
+                try {
+                  layout.selectPanel(null)
+                } catch (_ignored) {}
+                if (typeof requestAnimationFrame === 'function') requestAnimationFrame(focusComposer)
+                else setTimeout(focusComposer, 0)
+              } else {
+                focusComposer()
+              }
+              return
+            }
             const alt = event.code === 'AltLeft' || event.code === 'AltRight'
             if (alt) {
               if (event.ctrlKey || event.metaKey || event.shiftKey) return
@@ -690,6 +748,13 @@ window.__ModuleLoader__.load({
               label: () => t('command.jump'),
               keys: [...jumpKeys.slice(0, -1), '1-9'],
               bindings: jumpBindings,
+              group: 'application',
+            }),
+            ctx.shortcuts.registerFixed({
+              id: 'dsh-hotkey.focus',
+              label: () => t('command.focus'),
+              keys: ctx.shortcuts.describeBinding({ code: 'Enter', modifiers: ['alt'] }).keys,
+              bindings: [{ code: 'Enter', modifiers: ['alt'] }],
               group: 'application',
             }),
           ]
