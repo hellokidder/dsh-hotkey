@@ -375,8 +375,9 @@ window.__ModuleLoader__.load({
         // Menu and listbox portals can sit under an aria-hidden/inert app shell
         // while still being the visible interactive layer.
         const inMenu = element.closest('[role="menu"], [role="listbox"]') !== null
-        if (!inMenu && element.closest('[inert]') !== null) continue
-        if (!inMenu && element.closest('[aria-hidden="true"]') !== null) continue
+        const menuItem = element.matches('[role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]')
+        if (!inMenu && !menuItem && element.closest('[inert]') !== null) continue
+        if (!inMenu && !menuItem && element.closest('[aria-hidden="true"]') !== null) continue
         if (element.tagName === 'BODY' || element.tagName === 'HTML') continue
         if (element.disabled === true || element.getAttribute('aria-disabled') === 'true') continue
         if (typeof element.checkVisibility === 'function') {
