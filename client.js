@@ -13,13 +13,13 @@ window.__ModuleLoader__.load({
       'command.next': 'Next conversation',
       'command.previous': 'Previous conversation',
       'command.jump': 'Go to conversation 1-9',
-      'hints.footer': 'Press a letter to click · Esc to close',
+      'hints.footer': 'Type hint letters to filter and click · Esc to close',
     }
     const zh = {
       'command.next': '下一个对话',
       'command.previous': '上一个对话',
       'command.jump': '跳转到对话 1-9',
-      'hints.footer': '按字母点击 · Esc 关闭',
+      'hints.footer': '输入字母筛选并点击 · Esc 关闭',
     }
 
     const CSS = `
@@ -74,6 +74,13 @@ window.__ModuleLoader__.load({
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  transition: background-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+}
+.dsh-hotkey-hints__badge--match {
+  border-color: transparent;
+  background: var(--dsw-alias-brand-primary, #e8eaed);
+  color: var(--dsw-alias-bg-base, #15171c);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--dsw-alias-brand-primary, #e8eaed) 35%, transparent);
 }
 .dsh-hotkey-hints__footer {
   position: fixed;
@@ -303,12 +310,9 @@ window.__ModuleLoader__.load({
     }
 
     function assignHintCodes(count) {
-      if (count <= 26) {
-        return Array.from({ length: count }, (_, position) => String.fromCharCode(97 + position))
-      }
       const codes = []
       for (let position = 0; position < count; position++) {
-        codes.push(String.fromCharCode(97 + Math.floor(position / 26)) + String.fromCharCode(97 + (position % 26)))
+        codes.push(String.fromCharCode(97 + (position % 26)) + String.fromCharCode(97 + Math.floor(position / 26)))
       }
       return codes
     }
@@ -397,7 +401,9 @@ window.__ModuleLoader__.load({
             h('div', { className: 'dsh-hotkey-hints__footer' }, t('hints.footer')),
             snapshot.hints.map((hint) => h('div', {
               key: `badge-${hint.code}`,
-              className: 'dsh-hotkey-hints__badge',
+              className: hint.matched
+                ? 'dsh-hotkey-hints__badge dsh-hotkey-hints__badge--match'
+                : 'dsh-hotkey-hints__badge',
               style: { left: hint.left + 4, top: hint.top + 4 },
             }, hint.code)),
           )
@@ -502,7 +508,7 @@ window.__ModuleLoader__.load({
             active = true
             hintStore.publish({
               active: true,
-              hints: entries.map(({ element, ...hint }) => hint),
+              hints: entries.map(({ element, ...hint }) => ({ ...hint, matched: false })),
             })
           }
 
@@ -523,7 +529,12 @@ window.__ModuleLoader__.load({
 
           const handleHintKey = (letter) => {
             buffer += letter
-            const exact = entries.find((entry) => entry.code === buffer)
+            const matches = entries.filter((entry) => entry.code.startsWith(buffer))
+            if (matches.length === 0) {
+              close()
+              return
+            }
+            const exact = matches.find((entry) => entry.code === buffer)
             if (exact !== undefined) {
               const element = exact.element
               buffer = ''
@@ -531,7 +542,10 @@ window.__ModuleLoader__.load({
               clickTarget(element)
               return
             }
-            if (!entries.some((entry) => entry.code.startsWith(buffer))) close()
+            hintStore.publish({
+              active: true,
+              hints: matches.map(({ element, ...hint }) => ({ ...hint, matched: true })),
+            })
           }
 
           const onKeyDown = (event) => {
@@ -561,6 +575,20 @@ window.__ModuleLoader__.load({
               event.preventDefault()
               event.stopPropagation()
               close()
+              return
+            }
+            if (event.code === 'Backspace' && buffer !== '') {
+              event.preventDefault()
+              event.stopPropagation()
+              buffer = buffer.slice(0, -1)
+              const matches = entries.filter((entry) => entry.code.startsWith(buffer))
+              if (matches.length === 0) close()
+              else {
+                hintStore.publish({
+                  active: true,
+                  hints: matches.map(({ element, ...hint }) => ({ ...hint, matched: buffer !== '' })),
+                })
+              }
               return
             }
             if (/^Key[A-Z]$/u.test(event.code)) {
