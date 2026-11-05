@@ -52,6 +52,17 @@ window.__ModuleLoader__.load({
 .dsh-hotkey-hints {
   position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  overflow: visible;
+  box-sizing: border-box;
   pointer-events: none;
   font-family: inherit;
 }
@@ -355,6 +366,18 @@ window.__ModuleLoader__.load({
       return best
     }
 
+    /**
+     * Promote the hint layer to the browser's top layer so its badges stay
+     * above portaled menus and popovers.
+     */
+    function showHintPopover(node) {
+      if (node === null || node === undefined) return
+      try {
+        node.setAttribute('popover', 'manual')
+        if (typeof node.showPopover === 'function') node.showPopover()
+      } catch (_ignored) {}
+    }
+
     function collectHintCandidates(shortcutIndex) {
       if (typeof document === 'undefined' || typeof document.querySelectorAll !== 'function') return []
       if (typeof window === 'undefined') return []
@@ -431,6 +454,7 @@ window.__ModuleLoader__.load({
           return h('div', {
             className: 'dsh-hotkey-hints',
             'data-dsh-hotkey-overlay': 'true',
+            ref: showHintPopover,
           },
             h('div', { className: 'dsh-hotkey-hints__footer' }, t('hints.footer')),
             snapshot.hints.map((hint) => h('div', {

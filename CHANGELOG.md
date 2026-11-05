@@ -9,6 +9,7 @@
 - Hint codes are two letters: the first letter filters and highlights matches while other badges disappear, and the second letter clicks; Backspace rewinds the filter.
 - Add Option+Enter to focus the message composer from anywhere, closing the active main panel first.
 - Include the Lexical composer and menu/listbox portal items in hint scanning, and skip hidden ancestors via checkVisibility.
+- Promote the hint layer to the browser top layer so its badges appear above portaled menus and dropdowns.
 - Double-tap Option to toggle the clickable-control hint layer; every target is a compact letter pill matching the conversation number badges, with no outline boxes and native shortcut labels hidden for now. Control stays reserved for conversation numbering and rotation.
 - Keep the capture-phase keyboard handling and IME-safe dispatch from 0.0.1.
 
