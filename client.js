@@ -347,7 +347,6 @@ window.__ModuleLoader__.load({
         if (element.closest('[data-dsh-hotkey-overlay]') !== null) continue
         if (element.closest('[inert]') !== null) continue
         if (element.closest('[aria-hidden="true"]') !== null) continue
-        if (element.closest('[data-chat-flow]') !== null) continue
         if (isTurnRail(element)) continue
         if (element.tagName === 'BODY' || element.tagName === 'HTML') continue
         if (element.disabled === true || element.getAttribute('aria-disabled') === 'true') continue
