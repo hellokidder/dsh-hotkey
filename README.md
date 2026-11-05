@@ -36,6 +36,20 @@ dsh plugin --profile web add @hellokidder/dsh-hotkey
 dsh plugin --profile web add "link:/absolute/path/to/dsh-hotkey"
 ```
 
+通过插件市场的「发现」安装（可选）：
+
+DSH 目前没有官方插件市场；「发现」只读取用户添加的索引源。本仓库提供 format 1 索引，并在每次 GitHub Release 后自动更新：
+
+```text
+https://raw.githubusercontent.com/hellokidder/dsh-hotkey/main/market/index.json
+```
+
+1. 打开「插件」页，在「实验性插件」旁点「更多」，启用「自定义插件市场」。
+2. 切到「发现」→「添加索引源」→ 粘贴上面的 URL。
+3. 搜索 `DSH Hotkey` 并安装。
+
+索引由 `scripts/build-market-index.mjs` 生成，格式由 `@deepseek-ai/dsh-plugin-market-index` 校验；直接 `dsh plugin add` 仍然是主安装方式。
+
 安装后在插件管理中启用；修改 `client.js` 后刷新一次页面即可加载，如果运行在带 `pnpm run dev:web` watcher 的 checkout 中则会自动重载。
 
 ## 显示细节

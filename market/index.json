@@ -1,0 +1,110 @@
+{
+  "format": 1,
+  "title": {
+    "en": "DSH Hotkey",
+    "zh": "DSH 快捷键"
+  },
+  "description": {
+    "en": "Keyboard-first DSH: Control conversation numbering and cycling, double-Option letter hints, Option+Enter composer focus.",
+    "zh": "键盘流 DSH：Control 显示对话编号并轮转，双击 Option 显示字母提示，Option+Enter 聚焦输入框。"
+  },
+  "metadata": {
+    "categories": {
+      "productivity": {
+        "title": {
+          "en": "Productivity",
+          "zh": "效率"
+        }
+      },
+      "navigation": {
+        "title": {
+          "en": "Navigation",
+          "zh": "导航"
+        }
+      }
+    },
+    "labels": {
+      "keyboard": {
+        "title": {
+          "en": "Keyboard",
+          "zh": "键盘"
+        }
+      },
+      "hints": {
+        "title": {
+          "en": "Hints",
+          "zh": "提示"
+        }
+      },
+      "sessions": {
+        "title": {
+          "en": "Sessions",
+          "zh": "会话"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "@hellokidder/dsh-hotkey",
+      "title": {
+        "en": "DSH Hotkey",
+        "zh": "DSH 快捷键"
+      },
+      "description": {
+        "en": "Hold Control to number conversations, Control+Tab to cycle, double-tap Option for letter hints on clickable controls, and Option+Enter to focus the composer.",
+        "zh": "按住 Control 显示对话编号、Control+Tab 轮转；双击 Option 为可点击控件显示字母提示；Option+Enter 聚焦输入框。"
+      },
+      "icon": "https://raw.githubusercontent.com/hellokidder/dsh-hotkey/main/icon.svg",
+      "author": "hellokidder",
+      "homepage": "https://github.com/hellokidder/dsh-hotkey",
+      "repository": {
+        "url": "https://github.com/hellokidder/dsh-hotkey"
+      },
+      "metadata": {
+        "category": "productivity",
+        "labels": [
+          "keyboard",
+          "hints",
+          "sessions"
+        ],
+        "keywords": [
+          "dsh",
+          "deepseek-harness",
+          "dsh-plugin",
+          "hotkeys",
+          "keyboard-shortcuts",
+          "session-switcher",
+          "vimium",
+          "clickable-hints",
+          "composer-focus",
+          "productivity",
+          "macos"
+        ]
+      },
+      "versions": [
+        {
+          "version": "0.0.2",
+          "publishTimestamp": 1793861694,
+          "source": {
+            "type": "npm"
+          }
+        },
+        {
+          "version": "0.0.1",
+          "publishTimestamp": 1793784478,
+          "source": {
+            "type": "npm"
+          }
+        },
+        {
+          "version": "0.0.0-stage",
+          "publishTimestamp": 1793784349,
+          "source": {
+            "type": "npm"
+          }
+        }
+      ]
+    }
+  ]
+}
