@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.3
+
+- Number only the first nine sidebar conversations: a visible number now always means a working chord, and rows past nine keep the host's 16px seat empty instead of showing an unreachable index.
+- Add Control+J, a conversation switcher listing every session, including folded groups and rows the sidebar never rendered; panel numbers 1..k match the badges and the rest are appended in sidebar order.
+- Filter the switcher by index prefix (`12`) or title fragment; the arrows and Tab move, Enter opens, Escape or a second Control+J closes, and the previous focus is restored.
+- Hold Control for a moment past nine conversations to surface a `Control+J · all N conversations` hint; short presses like Control+C do not flash it.
+- Register the switcher in the read-only Keyboard Shortcuts group; Control+Tab, Control+Shift+Tab and Control+1-9 keep their behavior.
+- Dress the switcher in DSH's own material and semantic tokens (menu surface fill, menu blur, prominent elevation, panel radii, content font size, tooltip chip) with no hard-coded colors, so theme plugins repaint it by overriding tokens.
+
 ## 0.0.2
 
 - Use Control on every platform, including macOS; Command+N is no longer reserved and keeps opening a new session.

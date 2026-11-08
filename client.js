@@ -13,15 +13,29 @@ window.__ModuleLoader__.load({
       'command.next': 'Next conversation',
       'command.previous': 'Previous conversation',
       'command.jump': 'Go to conversation 1-9',
+      'command.panel': 'Jump to a conversation',
       'command.focus': 'Focus message input',
       'hints.footer': 'Type hint letters to filter and click · Esc to close',
+      'panel.title': 'Jump to conversation',
+      'panel.placeholder': 'Type a number or a title…',
+      'panel.empty': 'No matching conversation',
+      'panel.current': 'Current',
+      'panel.footer': '↑↓ choose · Enter open · Esc close',
+      'switcher.more': 'all {count} conversations',
     }
     const zh = {
       'command.next': '下一个对话',
       'command.previous': '上一个对话',
       'command.jump': '跳转到对话 1-9',
+      'command.panel': '跳转到会话',
       'command.focus': '聚焦输入框',
       'hints.footer': '输入字母筛选并点击 · Esc 关闭',
+      'panel.title': '跳转会话',
+      'panel.placeholder': '输入序号或标题…',
+      'panel.empty': '没有匹配的会话',
+      'panel.current': '当前',
+      'panel.footer': '↑↓ 选择 · Enter 打开 · Esc 关闭',
+      'switcher.more': '全部 {count} 个对话',
     }
 
     const CSS = `
@@ -113,6 +127,182 @@ window.__ModuleLoader__.load({
   text-overflow: ellipsis;
   pointer-events: none;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+.dsh-hotkey-switcher {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: max(14vh, calc(var(--dsh-frame-overlay-top, 0px) + 24px)) 24px 24px;
+  border: 0;
+  background: transparent;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-family: inherit;
+}
+/* Same material as the Menu primitive card: translucent fill, menu blur,
+   prominent elevation with the menu's l1 hairline. Semantic tokens only, so
+   theme plugins repaint the palette without touching this stylesheet. */
+.dsh-hotkey-switcher__dialog {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(520px, 100%);
+  max-height: 62vh;
+  padding: 4px;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--dsw-radius-lg);
+  --dsw-elevation-stroke-color: var(--dsw-alias-border-l1);
+  background: var(--dsw-menu-surface-fill, var(--dsw-alias-bg-layer-2));
+  backdrop-filter: var(--dsw-menu-backdrop-filter);
+  box-shadow: var(--dsw-elevation-prominent);
+  color: var(--dsw-alias-label-primary);
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  animation: dsh-hotkey-switcher-in var(--ds-transition-duration) var(--ds-ease-in-out);
+}
+@keyframes dsh-hotkey-switcher-in {
+  from { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dsh-hotkey-switcher__dialog,
+  .dsh-hotkey-switcher-hint { animation: none; }
+}
+.dsh-hotkey-switcher__search {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 3px;
+  padding: 5px 8px;
+  border-radius: var(--dsw-radius-md);
+}
+.dsh-hotkey-switcher__search-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--dsw-alias-label-caption);
+}
+.dsh-hotkey-switcher__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--dsw-alias-label-primary);
+  font-family: inherit;
+  font-size: var(--dsh-content-font-size, 14px);
+  line-height: 22px;
+}
+.dsh-hotkey-switcher__input::placeholder {
+  color: var(--dsw-alias-label-caption);
+}
+@media (pointer: coarse) {
+  .dsh-hotkey-switcher__input {
+    font-size: 16px;
+  }
+}
+.dsh-hotkey-switcher__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0;
+}
+.dsh-hotkey-switcher__row {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 5px 8px;
+  border-radius: var(--dsw-radius-md);
+  color: var(--dsw-alias-label-primary);
+  font-size: 13px;
+  line-height: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+.dsh-hotkey-switcher__row--active {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+/* DSH has no surface keycap: shortcut keys are plain tertiary text outside
+   tooltips. The index column keeps that restraint and stays aligned with the
+   search glyph above it. */
+.dsh-hotkey-switcher__number {
+  flex: none;
+  min-width: 16px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.dsh-hotkey-switcher__row--active .dsh-hotkey-switcher__number {
+  color: var(--dsw-alias-label-secondary);
+}
+.dsh-hotkey-switcher__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.dsh-hotkey-switcher__current {
+  flex: none;
+  color: var(--dsw-alias-label-caption);
+  font-size: 12px;
+  line-height: 18px;
+}
+.dsh-hotkey-switcher__empty {
+  padding: 8px;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 12px;
+  line-height: 18px;
+}
+.dsh-hotkey-switcher__footer {
+  flex: none;
+  margin-top: 2px;
+  padding: 5px 8px 3px;
+  border-top: 0.5px solid var(--dsw-alias-border-l2);
+  color: var(--dsw-alias-label-caption);
+  font-size: 11px;
+  line-height: 16px;
+}
+.dsh-hotkey-switcher-hint {
+  position: fixed;
+  inset: auto;
+  left: 50%;
+  bottom: 14px;
+  margin: 0;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  max-width: min(60vw, calc(100vw - 24px));
+  padding: 3px 7px;
+  border: 0;
+  border-radius: var(--dsw-radius-sm);
+  background: var(--dsw-alias-tooltip-bg);
+  color: var(--dsw-static-neutral-bluish-00);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  animation: dsh-hotkey-switcher-in 150ms var(--ds-ease-in-out);
 }
 `
 
@@ -251,6 +441,21 @@ window.__ModuleLoader__.load({
       }
       if (ordered.length === 0) return fallback
       return { ordered, indexById, currentId: fallback.currentId }
+    }
+
+    /**
+     * Filter switcher rows: all-digit queries match the global index prefix,
+     * anything else matches the title. Numbering inside the panel is global,
+     * so "12" always selects the twelfth conversation even when the sidebar
+     * only badges the first nine.
+     */
+    function filterPanelItems(items, rawQuery) {
+      const query = rawQuery.trim().toLowerCase()
+      if (query === '') return items
+      if (/^\d{1,3}$/u.test(query)) {
+        return items.filter((item) => String(item.number).startsWith(query))
+      }
+      return items.filter((item) => item.title.toLowerCase().includes(query))
     }
 
     const HINT_INTERACTIVE = 'button, a[href], input:not([type="hidden"]), select, textarea, summary, [data-composer-input], [data-lexical-editor="true"], [role="button"], [role="link"], [role="tab"], [role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"], [role="checkbox"], [role="radio"], [role="switch"], [role="treeitem"], [role="textbox"], [role="searchbox"], [contenteditable]:not([contenteditable="false"])'
@@ -440,13 +645,19 @@ window.__ModuleLoader__.load({
         const t = ctx.locale.bind(NS)
 
         const initial = deriveVisibleOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot())
-        const store = createStore({ held: false, ...initial })
+        const store = createStore({ held: false, hintVisible: false, total: 0, ...initial })
 
         const refreshOrder = () => {
           store.publish(deriveVisibleOrder(ctx.sessions.list.getSnapshot(), ctx.workspaces.list.getSnapshot()))
         }
 
         const hintStore = createStore({ active: false, hints: [] })
+        const panelStore = createStore({ open: false, items: [], query: '', active: 0 })
+        let panelOpen = false
+        let restoreFocus
+
+        // Platform-aware label for the switcher chord: ⌃J on macOS, Ctrl+J elsewhere.
+        const panelKeyLabel = ctx.shortcuts.describeBinding({ code: 'KeyJ', modifiers: ['control'] }).keys.join('')
 
         function HintOverlay() {
           const snapshot = React.useSyncExternalStore(hintStore.subscribe, hintStore.getSnapshot)
@@ -469,8 +680,11 @@ window.__ModuleLoader__.load({
 
         function SwitcherBadge({ sessionId }) {
           const snapshot = React.useSyncExternalStore(store.subscribe, store.getSnapshot)
+          // Only the first nine rows are reachable with Control+1…9; rows past
+          // nine carry no badge, so a visible number always means a live chord.
+          // Everything else is reachable through the Control+J switcher.
           const number = snapshot.held ? snapshot.indexById[sessionId] : 0
-          if (!number) return null
+          if (!number || number > 9) return null
           return h('span', {
             className: snapshot.currentId === sessionId
               ? `${BADGE_CLASS} ${BADGE_CURRENT_CLASS}`
@@ -499,13 +713,43 @@ window.__ModuleLoader__.load({
           }
         }, 'dsh-hotkey: switch order')
 
-        // Numbers follow Control on every platform, macOS included.
+        // Numbers follow Control on every platform, macOS included. Holding
+        // Control for a moment past nine conversations surfaces the switcher
+        // entry point; a quick Control+C does not flash it.
         ctx.effect(() => {
+          const HINT_DELAY_MS = 320
+          let hintTimer
+          const clearHint = () => {
+            if (hintTimer !== undefined) {
+              clearTimeout(hintTimer)
+              hintTimer = undefined
+            }
+            store.publish({ hintVisible: false })
+          }
           const sync = (event) => {
+            if (panelOpen) {
+              store.publish({ held: false })
+              return
+            }
             if (event.ctrlKey) refreshOrder()
             store.publish({ held: event.ctrlKey })
+            if (!event.ctrlKey) {
+              clearHint()
+              return
+            }
+            if (event.type === 'keydown' && hintTimer === undefined) {
+              hintTimer = setTimeout(() => {
+                hintTimer = undefined
+                if (panelOpen) return
+                const total = buildPanelItems().length
+                store.publish({ hintVisible: total > 9, total })
+              }, HINT_DELAY_MS)
+            }
           }
-          const clear = () => store.publish({ held: false })
+          const clear = () => {
+            clearHint()
+            store.publish({ held: false })
+          }
           const onVisibility = () => {
             if (document.visibilityState === 'hidden') clear()
           }
@@ -514,6 +758,7 @@ window.__ModuleLoader__.load({
           window.addEventListener('blur', clear)
           document.addEventListener('visibilitychange', onVisibility)
           return () => {
+            clearHint()
             window.removeEventListener('keydown', sync, true)
             window.removeEventListener('keyup', sync, true)
             window.removeEventListener('blur', clear)
@@ -608,6 +853,8 @@ window.__ModuleLoader__.load({
 
           const onKeyDown = (event) => {
             if (event.repeat) return
+            // The session switcher is its own input owner.
+            if (panelOpen) return
             const altEnter = event.code === 'Enter' && event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey
             if (altEnter) {
               const composer = findComposer()
@@ -745,6 +992,192 @@ window.__ModuleLoader__.load({
           if (target !== undefined && target !== currentId) activate(target)
         }
 
+        // ---- Conversation switcher (Control+J) -------------------------------
+        // Rendered rows keep their badge numbers; rows the sidebar folded away
+        // (or never rendered) are appended after them, so panel number 1..k is
+        // always identical to the badge on screen.
+
+        const buildPanelItems = () => {
+          const list = ctx.sessions.list.getSnapshot()
+          const workspaceState = ctx.workspaces.list.getSnapshot()
+          const rendered = deriveVisibleOrder(list, workspaceState).ordered
+          const fallback = deriveOrder(list, workspaceState)
+          const byId = list.byId === undefined ? {} : list.byId
+          const seen = new Set()
+          const items = []
+          for (const id of [...rendered, ...fallback.ordered]) {
+            if (seen.has(id)) continue
+            seen.add(id)
+            const session = byId[id]
+            if (session === undefined) continue
+            const title = typeof session.displayTitle === 'string' && session.displayTitle !== ''
+              ? session.displayTitle
+              : String(id)
+            items.push({ id, number: items.length + 1, title, current: id === fallback.currentId })
+          }
+          return items
+        }
+
+        const openPanel = () => {
+          if (panelOpen) return
+          const items = buildPanelItems()
+          if (items.length === 0) return
+          const active = document.activeElement
+          restoreFocus = active !== null && active !== undefined && active !== document.body
+            && typeof active.focus === 'function'
+            ? active
+            : undefined
+          panelOpen = true
+          store.publish({ held: false, hintVisible: false })
+          panelStore.publish({ open: true, items, query: '', active: 0 })
+        }
+
+        const closePanel = (restore = true) => {
+          if (!panelOpen) return
+          panelOpen = false
+          panelStore.publish({ open: false, items: [], query: '', active: 0 })
+          const target = restoreFocus
+          restoreFocus = undefined
+          if (!restore || target === undefined) return
+          try {
+            target.focus({ preventScroll: true })
+          } catch (_ignored) {}
+        }
+
+        const panelSelection = () => {
+          const snapshot = panelStore.getSnapshot()
+          if (!snapshot.open) return undefined
+          const items = filterPanelItems(snapshot.items, snapshot.query)
+          if (items.length === 0) return undefined
+          const active = Math.min(Math.max(snapshot.active, 0), items.length - 1)
+          return { items, active, item: items[active] }
+        }
+
+        const movePanelActive = (delta) => {
+          const selection = panelSelection()
+          if (selection === undefined) return
+          const count = selection.items.length
+          panelStore.publish({ active: (selection.active + delta + count) % count })
+        }
+
+        const openPanelSelection = () => {
+          const selection = panelSelection()
+          if (selection === undefined) return
+          const target = selection.item.id
+          closePanel(false)
+          activate(target)
+        }
+
+        function SwitcherPanel() {
+          const snapshot = React.useSyncExternalStore(panelStore.subscribe, panelStore.getSnapshot)
+          const inputRef = React.useRef(null)
+          const activeRef = React.useRef(null)
+          React.useEffect(() => {
+            if (!snapshot.open) return
+            const input = inputRef.current
+            if (input === null || input === undefined) return
+            try {
+              input.focus({ preventScroll: true })
+            } catch (_ignored) {}
+          }, [snapshot.open])
+          React.useEffect(() => {
+            const node = activeRef.current
+            if (node === null || node === undefined || typeof node.scrollIntoView !== 'function') return
+            try {
+              node.scrollIntoView({ block: 'nearest' })
+            } catch (_ignored) {}
+          }, [snapshot.active, snapshot.query])
+          if (!snapshot.open) return null
+          const items = filterPanelItems(snapshot.items, snapshot.query)
+          const active = Math.min(Math.max(snapshot.active, 0), Math.max(0, items.length - 1))
+          const updateQuery = (value) => panelStore.publish({ query: value, active: 0 })
+          return h('div', {
+            className: 'dsh-hotkey-switcher',
+            'data-dsh-hotkey-overlay': 'true',
+            ref: showHintPopover,
+            onPointerDown: (event) => {
+              if (event.target === event.currentTarget) closePanel()
+            },
+          },
+            h('div', {
+              className: 'dsh-hotkey-switcher__dialog',
+              role: 'dialog',
+              'aria-modal': 'true',
+              'aria-label': t('panel.title'),
+              // Menu material hook: the theme's dark-mode stroke override and
+              // any theme plugin restyle key off the same attribute.
+              'data-menu-material': 'translucent',
+            },
+              h('div', { className: 'dsh-hotkey-switcher__search' },
+                h('span', { className: 'dsh-hotkey-switcher__search-icon', 'aria-hidden': 'true' },
+                  h('svg', {
+                    viewBox: '0 0 16 16',
+                    width: 16,
+                    height: 16,
+                    fill: 'none',
+                    stroke: 'currentColor',
+                    strokeWidth: 1.4,
+                    strokeLinecap: 'round',
+                  },
+                    h('circle', { cx: 7, cy: 7, r: 4.4 }),
+                    h('path', { d: 'M10.4 10.4 13.4 13.4' }),
+                  ),
+                ),
+                h('input', {
+                  ref: inputRef,
+                  className: 'dsh-hotkey-switcher__input',
+                  type: 'text',
+                  value: snapshot.query,
+                  placeholder: t('panel.placeholder'),
+                  spellCheck: false,
+                  autoComplete: 'off',
+                  'aria-label': t('panel.title'),
+                  onChange: (event) => updateQuery(event.target.value),
+                }),
+              ),
+              h('div', { className: 'dsh-hotkey-switcher__list', role: 'listbox' },
+                items.map((item, position) => h('div', {
+                  key: item.id,
+                  ref: position === active ? activeRef : undefined,
+                  role: 'option',
+                  'aria-selected': position === active,
+                  className: position === active
+                    ? 'dsh-hotkey-switcher__row dsh-hotkey-switcher__row--active'
+                    : 'dsh-hotkey-switcher__row',
+                  onMouseDown: (event) => {
+                    event.preventDefault()
+                    closePanel(false)
+                    activate(item.id)
+                  },
+                  onMouseEnter: () => {
+                    if (position !== active) panelStore.publish({ active: position })
+                  },
+                },
+                  h('span', { className: 'dsh-hotkey-switcher__number' }, String(item.number)),
+                  h('span', { className: 'dsh-hotkey-switcher__title' }, item.title),
+                  item.current === true
+                    ? h('span', { className: 'dsh-hotkey-switcher__current' }, t('panel.current'))
+                    : null,
+                )),
+                items.length === 0
+                  ? h('div', { className: 'dsh-hotkey-switcher__empty' }, t('panel.empty'))
+                  : null,
+              ),
+              h('div', { className: 'dsh-hotkey-switcher__footer' }, t('panel.footer')),
+            ),
+          )
+        }
+
+        function SwitcherHint() {
+          const snapshot = React.useSyncExternalStore(store.subscribe, store.getSnapshot)
+          if (!snapshot.hintVisible || snapshot.total <= 9) return null
+          return h('div', {
+            className: 'dsh-hotkey-switcher-hint',
+            'data-dsh-hotkey-overlay': 'true',
+            ref: showHintPopover,
+          }, `${panelKeyLabel} · ${t('switcher.more', { count: snapshot.total })}`)
+        }
+
         ctx.effect(() => {
           const nextBinding = { code: 'Tab', modifiers: ['control'] }
           const previousBinding = { code: 'Tab', modifiers: ['control', 'shift'] }
@@ -776,6 +1209,13 @@ window.__ModuleLoader__.load({
               group: 'application',
             }),
             ctx.shortcuts.registerFixed({
+              id: 'dsh-hotkey.panel',
+              label: () => t('command.panel'),
+              keys: ctx.shortcuts.describeBinding({ code: 'KeyJ', modifiers: ['control'] }).keys,
+              bindings: [{ code: 'KeyJ', modifiers: ['control'] }],
+              group: 'application',
+            }),
+            ctx.shortcuts.registerFixed({
               id: 'dsh-hotkey.focus',
               label: () => t('command.focus'),
               keys: ctx.shortcuts.describeBinding({ code: 'Enter', modifiers: ['alt'] }).keys,
@@ -795,6 +1235,51 @@ window.__ModuleLoader__.load({
         ctx.effect(() => {
           const onKeyDown = (event) => {
             if (event.defaultPrevented || event.repeat) return
+            if (panelOpen) {
+              // The input owns text and IME composition; the panel owns
+              // navigation, commit, and close.
+              if (event.isComposing === true) return
+              const command = event.ctrlKey === true && event.metaKey !== true && event.altKey !== true
+              if (event.code === 'Escape') {
+                event.preventDefault()
+                event.stopPropagation()
+                closePanel()
+                return
+              }
+              if (command && event.code === 'KeyJ') {
+                event.preventDefault()
+                event.stopPropagation()
+                closePanel()
+                return
+              }
+              if (command && event.code === 'Tab') {
+                event.preventDefault()
+                event.stopPropagation()
+                closePanel()
+                step(event.shiftKey === true ? -1 : 1)
+                return
+              }
+              if (event.code === 'ArrowDown' || event.code === 'ArrowUp') {
+                event.preventDefault()
+                event.stopPropagation()
+                movePanelActive(event.code === 'ArrowDown' ? 1 : -1)
+                return
+              }
+              if (event.code === 'Tab') {
+                // Keep focus in the input; Tab walks the results instead of
+                // escaping behind the scrim.
+                event.preventDefault()
+                event.stopPropagation()
+                movePanelActive(event.shiftKey === true ? -1 : 1)
+                return
+              }
+              if (event.code === 'Enter' && event.ctrlKey !== true && event.metaKey !== true && event.shiftKey !== true) {
+                event.preventDefault()
+                event.stopPropagation()
+                openPanelSelection()
+              }
+              return
+            }
             // Do not consult isComposing/keyCode 229 here: Chinese IMEs report
             // Shift as a composition key, which would swallow Control+Shift+Tab.
             // A Control chord is a command, not text input.
@@ -806,15 +1291,26 @@ window.__ModuleLoader__.load({
               step(event.shiftKey === true ? -1 : 1)
               return
             }
+            if (event.code === 'KeyJ' && event.shiftKey !== true) {
+              event.preventDefault()
+              event.stopPropagation()
+              openPanel()
+              return
+            }
             if (event.shiftKey !== true && /^Digit[1-9]$/u.test(event.code)) {
               event.preventDefault()
               event.stopPropagation()
               jump(Number(event.code.slice('Digit'.length)))
             }
           }
+          const onBlur = () => {
+            if (panelOpen) closePanel(false)
+          }
           window.addEventListener('keydown', onKeyDown, true)
+          window.addEventListener('blur', onBlur)
           return () => {
             window.removeEventListener('keydown', onKeyDown, true)
+            window.removeEventListener('blur', onBlur)
           }
         }, 'dsh-hotkey: keyboard')
 
@@ -823,6 +1319,18 @@ window.__ModuleLoader__.load({
           id: 'dsh-hotkey.hints',
           order: 100,
         }, HintOverlay))
+
+        ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+          name: 'shell.overlay',
+          id: 'dsh-hotkey.switcher',
+          order: 110,
+        }, SwitcherPanel))
+
+        ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+          name: 'shell.overlay',
+          id: 'dsh-hotkey.switcher-hint',
+          order: 120,
+        }, SwitcherHint))
 
         ctx.slots.inject('sidebar.session.row.leading', () => ctx.slots.register({
           name: 'sidebar.session.row.leading',

@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH 快捷键",
-    "description": "DSH 快捷键的统一入口。按住 Control 显示侧边栏对话编号并轮转；双击 Option 显示字母提示；Option+Enter 聚焦输入框。"
+    "description": "DSH 快捷键的统一入口。按住 Control 给前 9 个对话编号并轮转；Control+J 按序号或标题跳转到任意会话；双击 Option 显示字母提示；Option+Enter 聚焦输入框。"
   }
 }

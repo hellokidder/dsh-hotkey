@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "DSH Hotkey",
-    "description": "One home for DSH keyboard shortcuts. Hold Control to number and cycle conversations; double-tap Option to reveal letter hints; Option+Enter focuses the composer."
+    "description": "One home for DSH keyboard shortcuts. Hold Control to number the first nine conversations and cycle them; Control+J switches to any conversation by index or title; double-tap Option reveals letter hints; Option+Enter focuses the composer."
   }
 }

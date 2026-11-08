@@ -62,8 +62,8 @@ const index = {
   format: 1,
   title: { en: 'DSH Hotkey', zh: 'DSH 快捷键' },
   description: {
-    en: 'Keyboard-first DSH: Control conversation numbering and cycling, double-Option letter hints, Option+Enter composer focus.',
-    zh: '键盘流 DSH：Control 显示对话编号并轮转，双击 Option 显示字母提示，Option+Enter 聚焦输入框。',
+    en: 'Keyboard-first DSH: Control conversation numbering and cycling, Control+J to jump to any conversation, double-Option letter hints, Option+Enter composer focus.',
+    zh: '键盘流 DSH：Control 显示对话编号并轮转，Control+J 跳转到任意会话，双击 Option 显示字母提示，Option+Enter 聚焦输入框。',
   },
   metadata: {
     categories: {
@@ -81,8 +81,8 @@ const index = {
       name: packageJson.name,
       title: { en: 'DSH Hotkey', zh: 'DSH 快捷键' },
       description: {
-        en: 'Hold Control to number conversations, Control+Tab to cycle, double-tap Option for letter hints on clickable controls, and Option+Enter to focus the composer.',
-        zh: '按住 Control 显示对话编号、Control+Tab 轮转；双击 Option 为可点击控件显示字母提示；Option+Enter 聚焦输入框。',
+        en: 'Hold Control to number the first nine conversations, Control+Tab to cycle, Control+J to jump to any conversation by index or title, double-tap Option for letter hints, and Option+Enter to focus the composer.',
+        zh: '按住 Control 显示前 9 个对话的编号、Control+Tab 轮转；Control+J 按序号或标题跳转到任意会话；双击 Option 为可点击控件显示字母提示；Option+Enter 聚焦输入框。',
       },
       icon: iconUrl,
       author: 'hellokidder',

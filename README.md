@@ -6,21 +6,23 @@ npm：`@hellokidder/dsh-hotkey`
 
 ## 已包含
 
-- **按住 Control** 时，左侧每个对话行首显示 1…n 的序号；当前对话的序号使用品牌色高亮。macOS 上也是 **Control**，不是 Command。
+- **按住 Control** 时，左侧前 9 个对话行首显示 1…9 的序号；当前对话的序号使用品牌色高亮。第 10 个之后不再编号（没有能按到的键，就不显示按不到的号）。macOS 上也是 **Control**，不是 Command。
 - **Control + Tab** 切换到下一个对话，**Control + Shift + Tab** 切换到上一个，均循环。
 - **Control + 1…9** 直接跳转到对应序号的对话。
+- **Control + J** 打开会话跳转面板：列出**全部**会话（包括折叠分组、「显示更多」里尚未渲染的行、以及其它分组），列表顺序就是侧边栏顺序——前 9 个的序号与徽标完全一致，其余接在后面。输入**序号前缀**（`12`）或**标题片段**过滤，`↑↓` / `Tab` 移动，`Enter` 打开，`Esc` 或再按一次 `Control + J` 关闭；关闭后焦点回到原处。
 - **Option + Enter** 从任意位置把光标聚焦到当前输入框；如果主面板（设置、Review 等）盖住了会话，会先关掉面板再聚焦。
 - 编号和轮转顺序直接跟随**当前渲染出来的侧边栏行**：切换 Workspace 分组、In one list、Manual 排序、固定、折叠或归档过滤后，都会按你看到的行顺序重排。
 - 归档会话、子代理会话和空的「新会话」行不参与编号。
-- **双击 Option（⌥）** 打开或关闭点击提示层：整个窗口的可点击控件会在左上角显示一个字母胶囊，样式与侧边栏的 1…n 编号一致（原生快捷键暂时不展示，也不绘制外框）。提示层保持显示：每个控件显示两个字母的提示码，输入第一个字母会保留并高亮命中的提示、其余消失，输入第二个字母才点击对应控件；`Backspace` 回退，`Esc` 或点击任意位置关闭。Ctrl 只负责会话编号与轮转。
-- 三个快捷键会出现在「设置 → 键盘快捷键」的只读分组中，便于查找。
+- **双击 Option（⌥）** 打开或关闭点击提示层：整个窗口的可点击控件会在左上角显示一个字母胶囊，样式与侧边栏的 1…9 编号一致（原生快捷键暂时不展示，也不绘制外框）。提示层保持显示：每个控件显示两个字母的提示码，输入第一个字母会保留并高亮命中的提示、其余消失，输入第二个字母才点击对应控件；`Backspace` 回退，`Esc` 或点击任意位置关闭。Ctrl 只负责会话编号、轮转与 `Control+J` 跳转面板。
+- 四个快捷键会出现在「设置 → 键盘快捷键」的只读分组中，便于查找。
 
 ## 平台说明
 
 - 会话编号与轮转统一使用 **Control**；`Command+N` 完全不受影响，仍然是「新建会话」。
 - 字母提示层用 **双击 Option**（Windows/Linux 上是 Alt）打开/关闭；它和 Ctrl 的会话编号/轮转互不影响，也不会和 Option+字母输入特殊字符冲突。
 - macOS 的 `Control+1…9` 可能被系统「切换桌面」占用。如果数字跳转没有反应，可以在 **系统设置 → 键盘 → 键盘快捷键 → 调度中心** 关闭对应的桌面切换快捷键；`Control+Tab` / `Control+Shift+Tab` 不受影响。
-- 在 Chrome / Safari 里直接打开 Web GUI 时，`Control+Tab` / `Control+Shift+Tab` 会被浏览器标签页切换占用，`Control+1…9` 也可能被占用；桌面 App 更稳妥。
+- 在 Chrome / Safari 里直接打开 Web GUI 时，`Control+Tab` / `Control+Shift+Tab` 会被浏览器标签页切换占用，`Control+1…9` 和 `Control+J` 也可能被浏览器（标签页切换、下载）占用；桌面 App 更稳妥。
+- 会话超过 9 个时，按住 Control 约 0.3 秒会在底部提示一次 `⌃J · 全部 N 个对话`，用来替代第 10 个之后缺失的编号；快速按 Control+C 这类短按不会触发。
 
 ## 安装
 
@@ -54,11 +56,13 @@ https://raw.githubusercontent.com/hellokidder/dsh-hotkey/main/market/index.json
 
 ## 显示细节
 
-- 编号占用每行标题左侧的 16px 座位；正在运行、等待审批或有未读完成状态的行会优先显示宿主的状态点，该行不显示编号。
+- 编号占用每行标题左侧的 16px 座位；正在运行、等待审批或有未读完成状态的行会优先显示宿主的状态点，该行不显示编号。只有前 9 行显示编号，第 10 行起座位保持空白（宿主的 16px 座位仍然保留，按住 Control 不会让标题左右跳动）。
 - 顺序来自会话行上的 `data-row-key="session:<id>"`，按 DOM 中的视觉顺序编号。折叠分组和「显示更多」里尚未渲染的会话不参与编号与 `Control+Tab`；侧边栏收起或处于搜索态、读不到行时，会回退到服务端默认顺序（按 Workspace 分组 + 最近使用）。
 - 这是一个 DOM 依赖：如果 DSH 升级改动了会话行的 `data-row-key`，编号会退回默认顺序，需要同步更新插件；插件不会修改侧边栏 DOM。
 - 提示层只扫描真正的控件（原生可交互标签、Lexical/textarea 输入框，以及 button / link / tab / menuitem / textbox 等角色），覆盖侧边栏、输入区、顶栏、设置、右侧面板、对话正文里的按钮/链接，以及菜单/下拉项的 portal。右侧轮次缩略轴（turn rail）不参与；被 aria-hidden/inert 隐藏或不可见的元素会跳过。段落、消息行这类非控件容器不会生成提示。
-- 会话行本身由 1…n 编号负责，不再重复生成字母提示；折叠、隐藏或禁用的控件不显示。
+- 会话行本身由 1…9 编号负责，不再重复生成字母提示；折叠、隐藏或禁用的控件不显示。
+- `Control+J` 面板直接复用 DSH 的菜单材质与语义 token（`--dsw-menu-surface-fill`、`--dsw-menu-backdrop-filter`、`--dsw-elevation-prominent`、`--dsw-radius-*`、`--dsh-content-font-size` 等），插件里没有硬编码颜色；主题插件只要覆盖 token，面板就会跟着换肤。
+- `Control+J` 面板的编号是「侧边栏顺序 + 未渲染的行追加在后」：面板里第 1…9 项与徽标一一对应，折叠/未渲染的会话接在后面编号，所以面板序号同时也是这些会话的唯一定位方式。面板打开期间冻结一次快照，后台刷新不会让列表在输入时重排。
 - 当前提示层只显示生成的字母提示，不绘制外框/背景；原生快捷键标签默认关闭，匹配逻辑保留在 `SHOW_NATIVE_SHORTCUTS` 常量后面，以后需要时可以重新打开。字母提示是插件生成的点击键，不依赖宿主的快捷键注册表；双击 Option 打开它，按住 Control 仍是对话编号与轮转。
 
 ## 与「新建会话」的关系
@@ -66,7 +70,7 @@ https://raw.githubusercontent.com/hellokidder/dsh-hotkey/main/market/index.json
 插件只使用 Control 组合，不占用任何 `Command`/`Ctrl + N`：
 
 - `Command+N`（macOS）和宿主默认的 `Ctrl+N`（Windows/Linux）都保持原样，「新建会话」不受影响；
-- 对话轮转使用 `Control+Tab` / `Control+Shift+Tab`，直达使用 `Control+1…9`；
+- 对话轮转使用 `Control+Tab` / `Control+Shift+Tab`，直达使用 `Control+1…9`，全量跳转使用 `Control+J`；
 - 固定快捷键仍然会出现在「设置 → 键盘快捷键」中，方便查看。
 
 ## 扩展新快捷键
@@ -92,7 +96,7 @@ node --check client.js
 
 ```sh
 npm publish --access public
-git tag v0.0.2 && git push origin v0.0.2
+git tag v0.0.3 && git push origin v0.0.3
 ```
 
 ## License

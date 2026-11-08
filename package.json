@@ -1,8 +1,8 @@
 {
   "name": "@hellokidder/dsh-hotkey",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
-  "description": "One home for DSH keyboard shortcuts: hold Control to number and cycle conversations, double-tap Option to reveal clickable controls with letter hints, Option+Enter to focus the composer.",
+  "description": "One home for DSH keyboard shortcuts: number the first nine conversations with Control, jump to any conversation with Control+J, cycle with Control+Tab, double-tap Option for clickable hints, and Option+Enter to focus the composer.",
   "license": "MIT",
   "author": "kidder",
   "keywords": [
