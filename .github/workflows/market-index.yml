@@ -18,6 +18,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      # awesome-dsh-plugin only lists repos carrying the `dsh-plugin` topic, and losing
+      # it is silent. PUT replaces the whole set, so the list below is the complete
+      # topic set. Best effort: GITHUB_TOKEN is not guaranteed to be allowed to edit
+      # topics, and a 403 here must not fail a release.
+      - name: Ensure the dsh-plugin topic
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/topics" -f 'names[]=dsh-plugin' --jq '.names'
       - name: Regenerate market/index.json
         run: node scripts/build-market-index.mjs
       - name: Commit the index
